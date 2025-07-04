@@ -134,11 +134,11 @@ class UserAuth:
                                 detail="Error deleting verification code")
 
     def login(self, login_data: UserLoginSchema):
-        email = login_data.email
+        login = login_data.login
         password = login_data.password
 
         try:
-            self.db.cursor.execute("""SELECT * FROM users WHERE email = %s""", (email,))
+            self.db.cursor.execute("""SELECT * FROM users WHERE email = %s OR username=%s""", (login, login))
         except Exception:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail="Database query error")

@@ -25,5 +25,5 @@ class VerificationCodeSchema(BaseModel):
 
 
 class UserLoginSchema(BaseModel):
-    email: EmailStr
+    login: str
     password: str
