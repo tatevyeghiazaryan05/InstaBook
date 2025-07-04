@@ -16,31 +16,30 @@ class UserAuth:
     def signup(self, data: UserSignUpSchema):
         username = data.username.strip()
         email = data.email.lower().strip()
-        password=data.password
-        fullname=data.fullname
-        phone=data.phone
-        birthday=data.birthday
-        gender=data.gender
-        profile_image=data.profile_image
-
+        password = data.password
+        fullname = data.fullname
+        phone = data.phone
+        birthday = data.birthday
+        gender = data.gender.strip()
+        profile_image = data.profile_image
 
         try:
             self.db.cursor.execute("""SELECT * FROM users where email=%s""",
-                                       (email,))
+                                   (email,))
         except Exception:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                    detail="Can't select data")
+                                detail="Can't select data")
 
         try:
             existing_user = self.db.cursor.fetchone()
         except Exception:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                    detail="Can't fetch user")
+                                detail="Can't fetch user")
 
         if existing_user:
             raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Email is already registered. Please log in or use a different email.")
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email is already registered. Please log in or use a different email.")
 
         self.db.cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
         if self.db.cursor.fetchone():
@@ -49,25 +48,25 @@ class UserAuth:
         try:
             hashed_password = pwd_context.hash(password)
         except Exception:
-                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                    detail="Error hashing password")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail="Error hashing password")
 
         try:
             self.db.cursor.execute("""INSERT INTO users 
-                                    (name, email, password, fullname, username, phone, birthday, gender, profile_image) 
-                                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
-                                       (email, hashed_password,fullname,username,
-                                        phone,birthday,gender,profile_image))
+                                    (email, password, fullname, username, phone, birthday, gender, profile_image) 
+                                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""",
+                                   (email, hashed_password, fullname, username,
+                                    phone, birthday, gender, profile_image))
             self.db.conn.commit()
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                    detail=f"Database Query error :{e} ")
+                                detail=f"Database Query error :{e} ")
 
         code = generate_verification_code()
 
         try:
             self.db.cursor.execute("""INSERT INTO verificationcode (code, email) VALUES (%s, %s)""",
-                                       (code, email))
+                                   (code, email))
             self.db.conn.commit()
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -186,4 +185,3 @@ class UserAuth:
                                 detail="Token creation error")
 
         return {"access_token": token}
-

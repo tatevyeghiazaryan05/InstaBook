@@ -6,7 +6,6 @@ import datetime
 class GenderEnum(str, Enum):
     male = "male"
     female = "female"
-    other = "other"
 
 
 class UserSignUpSchema(BaseModel):

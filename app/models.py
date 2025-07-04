@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Enum, String, Integer, text, TIMESTAMP, Boolean, Date
+from sqlalchemy import (Column, Enum, String, Integer,
+                        text, TIMESTAMP, Boolean, Date)
 import enum
 
 from app.database import Base
@@ -7,7 +8,6 @@ from app.database import Base
 class GenderEnum(enum.Enum):
     male = "male"
     female = "female"
-    other = "other"
 
 
 class Users(Base):

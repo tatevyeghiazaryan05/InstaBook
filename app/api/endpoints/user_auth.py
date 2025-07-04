@@ -15,7 +15,7 @@ UPLOAD_DIR = "user_pics"
 
 @user_auth_router.post("/api/instabook/user/sign-up",
                        status_code=status.HTTP_201_CREATED)
-async def signup(name: str = Form(...),
+async def signup(
     email: str = Form(...),
     password: str = Form(...),
     fullname: str = Form(...),
@@ -39,7 +39,6 @@ async def signup(name: str = Form(...),
         profile_image = "default_profile.png"
 
     user_data = UserSignUpSchema(
-        name=name,
         email=email,
         password=password,
         fullname=fullname,
