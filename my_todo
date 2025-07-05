@@ -1,4 +1,8 @@
 # todo in security.py file write try except +
 # todo log in email or username +
-# todo create posts and posts crud
-# todo user crud
+# todo create posts
+# todo posts crud
+# todo user crud +
+
+
+# todo should I add tags , hashtags, like count,comment count in posts table
