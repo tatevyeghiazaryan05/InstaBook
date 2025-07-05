@@ -34,3 +34,16 @@ class VerificationCode(Base):
     email = Column(String, nullable=False)
     code = Column(String, nullable=False)
     created_at = Column(TIMESTAMP, nullable=False, server_default=text("now()"))
+
+
+class Posts(Base):
+    __tablename__ = "posts"
+
+    id = Column(Integer, nullable=False, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    image = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    location = Column(String, nullable=True)
+    is_public = Column(Boolean, server_default="true")
+    created_at = Column(TIMESTAMP, nullable=False, server_default=text("now()"))
+    updated_at = Column(TIMESTAMP, nullable=True)
