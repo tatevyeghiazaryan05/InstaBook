@@ -1,8 +1,9 @@
 # todo in security.py file write try except +
 # todo log in email or username +
-# todo create posts
-# todo posts crud
-# todo user crud +
+# todo create posts +
+# todo posts crud +
+# todo user crud +// in change profile_image is a problem
 
 
 # todo should I add tags , hashtags, like count,comment count in posts table
+#todo error in creating posts columns are null
