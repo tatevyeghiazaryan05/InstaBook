@@ -14,7 +14,7 @@ class PostCrud:
     def create_post(self, data: CreatePostSchema, user_id: int):
         try:
             self.db.cursor.execute(
-                                    """INSERT INTO posts (user_id, image,
+                                    """INSERT INTO posts (user_id, image_url,
                                     description, location, is_public)
                                     VALUES (%s, %s, %s, %s, %s)""",
                                     (user_id, data.image_url, data.description,

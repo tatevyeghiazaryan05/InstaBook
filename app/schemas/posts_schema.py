@@ -17,3 +17,7 @@ class ChangeDescription(BaseModel):
 class ChangeLocation(BaseModel):
     post_id: int
     location: str
+
+
+class SavePostSchema(BaseModel):
+    post_id: int
