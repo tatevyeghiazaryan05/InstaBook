@@ -64,20 +64,40 @@ def get_image(image_name: str):
 
 @post_crud_router.put("/api/change/post/description")
 def change_description(data: ChangeDescription, token=Depends(get_current_user)):
-    return post_crud_service.change_post_description(data)
+    try:
+        user_id = token.get("id")
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Token error")
+
+    return post_crud_service.change_post_description(data, user_id)
 
 
 @post_crud_router.put("/api/change/post/location")
-def change_description(data: ChangeLocation, token=Depends(get_current_user)):
-    return post_crud_service.change_post_location(data)
+def change_location(data: ChangeLocation, token=Depends(get_current_user)):
+    try:
+        user_id = token.get("id")
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Token error")
+
+    return post_crud_service.change_post_location(data, user_id)
 
 
 @post_crud_router.delete("/api/delete/post/{post_id}")
 def delete_post(post_id: int, token=Depends(get_current_user)):
-    return post_crud_service.delete_post(post_id)
+    try:
+        user_id = token.get("id")
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Token error")
+
+    return post_crud_service.delete_post(post_id, user_id)
 
 
 @post_crud_router.get("/api/get/post/{post_id}")
 def get_post(post_id: int, token=Depends(get_current_user)):
     return post_crud_service.get_post(post_id)
-

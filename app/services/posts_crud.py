@@ -24,23 +24,23 @@ class PostCrud:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=f"Database insert error")
 
-    def change_post_description(self, data: ChangeDescription):
+    def change_post_description(self, data: ChangeDescription, user_id: int):
         new_description = data.description
         post_id = data.post_id
         try:
-            self.db.cursor.execute("""UPDATE posts SET description=%s WHERE id=%s""",
-                               (new_description, post_id))
+            self.db.cursor.execute("""UPDATE posts SET description=%s WHERE id=%s AND user_id=%s""",
+                                   (new_description, post_id, user_id))
             self.db.conn.commit()
         except Exception:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail="Error updating")
 
-    def change_post_location(self, data: ChangeLocation):
+    def change_post_location(self, data: ChangeLocation, user_id: int):
         new_location = data.location
         post_id = data.post_id
         try:
-            self.db.cursor.execute("""UPDATE posts SET location=%s WHERE id=%s""",
-                                   (new_location, post_id))
+            self.db.cursor.execute("""UPDATE posts SET location=%s WHERE id=%s AND user_id=%s""",
+                                   (new_location, post_id, user_id))
             self.db.conn.commit()
         except Exception:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -62,7 +62,7 @@ class PostCrud:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
         return post
 
-    def delete_post(self, post_id: int):
+    def delete_post(self, post_id: int, user_id: int):
         post = self.get_post(post_id)
         print(post)
         image_url = dict(post).get("image")
@@ -76,10 +76,9 @@ class PostCrud:
             print(file_path)
 
         try:
-            self.db.cursor.execute("DELETE FROM posts WHERE id=%s",
-                                   (post_id,))
+            self.db.cursor.execute("DELETE FROM posts WHERE id=%s AND user_id=%s",
+                                   (post_id, user_id))
             self.db.conn.commit()
         except Exception:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail="Error deleting")
-
