@@ -61,3 +61,8 @@ def verify(data: VerificationCodeSchema):
                        status_code=status.HTTP_201_CREATED)
 def login(data: UserLoginSchema):
     return user_auth_service.login(data)
+
+
+@user_auth_router.get("/api/resend/code/{email}")
+def recover_email_verification_code(email: str):
+    return user_auth_service.resend_code(email)

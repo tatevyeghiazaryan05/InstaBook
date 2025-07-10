@@ -23,11 +23,12 @@ def create_access_token(user_data: dict):
             detail="Error in generating token")
     try:
         token = jwt.encode(user_data, secret_key, "HS256")
+        return token
+
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error in encode")
-    return token
 
 
 def verify_access_token(token: str):
@@ -37,8 +38,8 @@ def verify_access_token(token: str):
 
     except Exception:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Error in decode")
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token")
 
 
 def get_current_user(token=Depends(oauth2_schema)):
@@ -47,4 +48,4 @@ def get_current_user(token=Depends(oauth2_schema)):
         return data
     except Exception:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            status_code=status.HTTP_401_UNAUTHORIZED)

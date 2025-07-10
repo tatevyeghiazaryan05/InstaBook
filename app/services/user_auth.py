@@ -185,3 +185,23 @@ class UserAuth:
                                 detail="Token creation error")
 
         return {"access_token": token}
+
+    def resend_code(self, email: str):
+        code = generate_verification_code()
+
+        try:
+            self.db.cursor.execute("""INSERT INTO verificationcode (code, email) VALUES (%s, %s)""",
+                                   (code, email))
+            self.db.conn.commit()
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail=f"Error inserting verification code:{e}")
+
+        try:
+            email_sent = send_verification_email(email, code)
+            if not email_sent:
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                    detail="Failed to send verification email.")
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail="Error sending verification email")

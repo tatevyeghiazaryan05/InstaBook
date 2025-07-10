@@ -1,6 +1,7 @@
 from sqlalchemy import (Column, Enum, String,
                         Integer, text, TIMESTAMP,
-                        Boolean, Date, ForeignKey)
+                        Boolean, Date, ForeignKey,
+                        UniqueConstraint)
 import enum
 
 from app.database import Base
@@ -41,9 +42,20 @@ class Posts(Base):
 
     id = Column(Integer, nullable=False, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    image = Column(String, nullable=False)
+    image_url = Column(String, nullable=False)
     description = Column(String, nullable=True)
     location = Column(String, nullable=True)
     is_public = Column(Boolean, server_default="true")
     created_at = Column(TIMESTAMP, nullable=False, server_default=text("now()"))
-    updated_at = Column(TIMESTAMP, nullable=True)
+
+
+class SavePosts(Base):
+    __tablename__ = "saveposts"
+
+    id = Column(Integer, nullable=False, primary_key=True)
+
+    post_id = Column(Integer, ForeignKey("posts.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "post_id", name="uix_user_post"),)

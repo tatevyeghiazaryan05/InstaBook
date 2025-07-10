@@ -3,7 +3,8 @@ from typing import Optional
 
 
 class CreatePostSchema(BaseModel):
-    caption: Optional[str] = None
+    image_url: Optional[str] = None
+    description: Optional[str] = None
     location: Optional[str] = None
     is_public: Optional[bool] = True
 
