@@ -1,3 +1,5 @@
+import datetime
+
 from pydantic import BaseModel
 from typing import Optional
 
@@ -31,3 +33,13 @@ class CommentSchema(BaseModel):
 class UpdateCommentSchema(BaseModel):
     comment: str
 
+
+class PostOut(BaseModel):
+    description: str | None
+    image_url: str
+    created_at: datetime.datetime
+
+
+class CommentOut(BaseModel):
+    comment: str
+    created_at: datetime.datetime

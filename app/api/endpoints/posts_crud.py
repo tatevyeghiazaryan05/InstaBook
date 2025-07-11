@@ -7,7 +7,7 @@ from fastapi.responses import FileResponse
 
 from typing import Optional
 
-from schemas.posts_schema import CreatePostSchema, ChangeDescription, ChangeLocation
+from schemas.posts_schema import CreatePostSchema, ChangeDescription, ChangeLocation , PostOut
 from services.posts_crud import PostCrud
 from core.security import get_current_user
 
@@ -98,6 +98,6 @@ def delete_post(post_id: int, token=Depends(get_current_user)):
     return post_crud_service.delete_post(post_id, user_id)
 
 
-@post_crud_router.get("/api/get/post/{post_id}")
+@post_crud_router.get("/api/get/post/{post_id}", response_model=PostOut)
 def get_post(post_id: int, token=Depends(get_current_user)):
     return post_crud_service.get_post(post_id)
