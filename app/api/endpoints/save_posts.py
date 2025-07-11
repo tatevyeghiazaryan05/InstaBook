@@ -1,11 +1,4 @@
-import os
-import shutil
-import datetime
-
-from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException, status
-from fastapi.responses import FileResponse
-
-from typing import Optional
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from schemas.posts_schema import SavePostSchema
 from services.save_posts import SavePosts

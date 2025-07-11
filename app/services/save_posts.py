@@ -1,12 +1,7 @@
-from datetime import datetime, timedelta
-
 from fastapi import HTTPException, status
 
 from db_connection import DbConnection
 from schemas.posts_schema import SavePostSchema
-from core.security import pwd_context
-from services.email_service import send_verification_email, generate_verification_code
-from core.security import create_access_token
 
 
 class SavePosts:

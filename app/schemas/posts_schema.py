@@ -21,3 +21,13 @@ class ChangeLocation(BaseModel):
 
 class SavePostSchema(BaseModel):
     post_id: int
+
+
+class CommentSchema(BaseModel):
+    post_id: int
+    comment: str
+
+
+class UpdateCommentSchema(BaseModel):
+    comment: str
+
