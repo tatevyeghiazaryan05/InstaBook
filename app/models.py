@@ -82,3 +82,11 @@ class PostLikes(Base):
     __table_args__ = (
         UniqueConstraint("user_id", "post_id", name="uix_user_post_like"),
     )
+
+
+class Follow(Base):
+    __tablename__ = "follow"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    who = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    whom = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
