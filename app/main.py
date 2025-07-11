@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from api.endpoints import user_auth, user_crud, posts_crud, save_posts, comments, like
+from api.endpoints import (user_auth, user_crud, posts_crud, save_posts,
+                           comments, like, follow)
 
 
 app = FastAPI()
@@ -16,3 +17,4 @@ app.include_router(posts_crud.post_crud_router)
 app.include_router(save_posts.save_post_router)
 app.include_router(comments.comment_router)
 app.include_router(like.like_router)
+app.include_router(follow.follow_router)
