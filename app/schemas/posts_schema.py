@@ -11,16 +11,6 @@ class CreatePostSchema(BaseModel):
     is_public: Optional[bool] = True
 
 
-class ChangeDescription(BaseModel):
-    post_id: int
-    description: str
-
-
-class ChangeLocation(BaseModel):
-    post_id: int
-    location: str
-
-
 class SavePostSchema(BaseModel):
     post_id: int
 
@@ -43,3 +33,9 @@ class PostOut(BaseModel):
 class CommentOut(BaseModel):
     comment: str
     created_at: datetime.datetime
+
+
+class UpdatePostSchema(BaseModel):
+    post_id: int
+    description: Optional[str] = None
+    location: Optional[str] = None

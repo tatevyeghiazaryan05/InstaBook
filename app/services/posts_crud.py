@@ -4,7 +4,7 @@ from datetime import datetime
 from fastapi import UploadFile, HTTPException, status
 
 from db_connection import DbConnection
-from schemas.posts_schema import CreatePostSchema,ChangeDescription, ChangeLocation
+from schemas.posts_schema import CreatePostSchema,ChangeDescription, ChangeLocation, UpdatePostSchema
 
 
 class PostCrud:
@@ -24,27 +24,34 @@ class PostCrud:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=f"Database insert error")
 
-    def change_post_description(self, data: ChangeDescription, user_id: int):
-        new_description = data.description
-        post_id = data.post_id
+    def update_post(self, data: UpdatePostSchema, user_id: int):
         try:
-            self.db.cursor.execute("""UPDATE posts SET description=%s WHERE id=%s AND user_id=%s""",
-                                   (new_description, post_id, user_id))
-            self.db.conn.commit()
+            self.db.cursor.execute("SELECT user_id FROM posts WHERE id = %s", (data.post_id,))
         except Exception:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                detail="Error updating")
+                                detail="Query error")
 
-    def change_post_location(self, data: ChangeLocation, user_id: int):
-        new_location = data.location
-        post_id = data.post_id
         try:
-            self.db.cursor.execute("""UPDATE posts SET location=%s WHERE id=%s AND user_id=%s""",
-                                   (new_location, post_id, user_id))
+            post = self.db.cursor.fetchone()
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail="Fetch error")
+
+        if not post or post["user_id"] != user_id:
+            raise HTTPException(status_code=403, detail="Not authorized to update this post")
+
+        try:
+            if data.description is not None:
+                self.db.cursor.execute("UPDATE posts SET description = %s WHERE id = %s",
+                                       (data.description, data.post_id))
+
+            if data.location is not None:
+                self.db.cursor.execute("UPDATE posts SET location = %s WHERE id = %s", (data.location, data.post_id))
+
             self.db.conn.commit()
         except Exception:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                detail="Error updating")
+                                detail="Failed to update post")
 
     def get_post(self, post_id: int):
         try:

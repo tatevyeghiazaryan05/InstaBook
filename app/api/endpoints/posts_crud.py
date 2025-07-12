@@ -7,7 +7,7 @@ from fastapi.responses import FileResponse
 
 from typing import Optional
 
-from schemas.posts_schema import CreatePostSchema, ChangeDescription, ChangeLocation , PostOut
+from schemas.posts_schema import CreatePostSchema, ChangeDescription, ChangeLocation , PostOut, UpdatePostSchema
 from services.posts_crud import PostCrud
 from core.security import get_current_user
 
@@ -22,7 +22,7 @@ def create_post(
         is_public: Optional[bool] = Form(True),
         image: UploadFile = File(...),
         token=Depends(get_current_user)):
-    print (description)
+    print(description)
 
     try:
         user_id = token.get("id")
@@ -62,30 +62,6 @@ def get_image(image_name: str):
     return FileResponse(f"./post_images/{image_name}")
 
 
-@post_crud_router.put("/api/change/post/description")
-def change_description(data: ChangeDescription, token=Depends(get_current_user)):
-    try:
-        user_id = token.get("id")
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Token error")
-
-    return post_crud_service.change_post_description(data, user_id)
-
-
-@post_crud_router.put("/api/change/post/location")
-def change_location(data: ChangeLocation, token=Depends(get_current_user)):
-    try:
-        user_id = token.get("id")
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Token error")
-
-    return post_crud_service.change_post_location(data, user_id)
-
-
 @post_crud_router.delete("/api/delete/post/{post_id}")
 def delete_post(post_id: int, token=Depends(get_current_user)):
     try:
@@ -101,3 +77,14 @@ def delete_post(post_id: int, token=Depends(get_current_user)):
 @post_crud_router.get("/api/get/post/{post_id}", response_model=PostOut)
 def get_post(post_id: int, token=Depends(get_current_user)):
     return post_crud_service.get_post(post_id)
+
+
+@post_crud_router.put("/api/post/update")
+def update_post(data: UpdatePostSchema, token=Depends(get_current_user)):
+    try:
+        user_id = token.get("id")
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail="Token error")
+
+    return post_crud_service.update_post(data, user_id)
