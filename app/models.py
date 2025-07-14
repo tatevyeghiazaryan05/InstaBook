@@ -104,3 +104,15 @@ class Story(Base):
     is_video = Column(Boolean, nullable=False, default=False)
     is_public = Column(Boolean, nullable=False, default=True)
 
+
+class CommentLikes(Base):
+    __tablename__ = "comment_likes"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    comment_id = Column(Integer, ForeignKey("comments.id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    created_at = Column(TIMESTAMP, server_default=text("now()"))
+
+    __table_args__ = (
+        UniqueConstraint("comment_id", "user_id", name="unique_comment_like"),
+    )

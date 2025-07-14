@@ -111,3 +111,27 @@ class Comment:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail="Failed to update comment")
 
+    def like_comment(self, comment_id, user_id: int):
+        try:
+            self.db.cursor.execute("SELECT id FROM comments WHERE id = %s", (comment_id,))
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail="Query error")
+
+        try:
+            comment = self.db.cursor.fetchone()
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail="Error fetching")
+
+        if not comment:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="Comment not found")
+
+        try:
+            self.db.cursor.execute("""INSERT INTO comment_likes (comment_id, user_id)
+                                   VALUES (%s, %s)""", (comment_id, user_id))
+            self.db.conn.commit()
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail="You already liked this comment")

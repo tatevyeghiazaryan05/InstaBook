@@ -39,3 +39,5 @@ class UpdatePostSchema(BaseModel):
     post_id: int
     description: Optional[str] = None
     location: Optional[str] = None
+
+
