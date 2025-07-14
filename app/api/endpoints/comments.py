@@ -48,7 +48,7 @@ def update_comment(comment_id: int, data: UpdateCommentSchema, token=Depends(get
     return comment_service.update_comment(comment_id, user_id, data)
 
 
-@comment_router.put("/api/like/comment/{comment_id}")
+@comment_router.post("/api/like/comment/{comment_id}")
 def like_comment(comment_id: int, token=Depends(get_current_user)):
     try:
         user_id = token.get("id")
