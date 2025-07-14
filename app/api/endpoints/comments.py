@@ -56,3 +56,18 @@ def like_comment(comment_id: int, token=Depends(get_current_user)):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail="Token error")
     return comment_service.like_comment(comment_id, user_id)
+
+
+@comment_router.delete("/api/unlike/comment/{comment_id}")
+def unlike_comment(comment_id: int, token=Depends(get_current_user)):
+    try:
+        user_id = token.get("id")
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail="Token error")
+    return comment_service.unlike_comment(comment_id, user_id)
+
+
+@comment_router.get("/api/get/comment/{comment_id}")
+def get_comment_likes(comment_id: int, token=Depends(get_current_user)):
+    return comment_service.get_comment_likes(comment_id)

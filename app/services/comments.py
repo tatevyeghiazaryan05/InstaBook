@@ -135,3 +135,31 @@ class Comment:
         except Exception:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail="You already liked this comment")
+
+    def unlike_comment(self, comment_id, user_id: int):
+        try:
+            self.db.cursor.execute("""DELETE FROM comment_likes WHERE 
+                                   comment_id = %s AND user_id = %s""",
+                                   (comment_id, user_id))
+
+            self.db.conn.commit()
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail=f"Failed to unlike comment")
+
+    def get_comment_likes(self, comment_id: int):
+        try:
+            self.db.cursor.execute(
+                "SELECT COUNT(*) FROM comment_likes WHERE comment_id = %s",
+                (comment_id,)
+            )
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail=f"Failed to select")
+
+        try:
+            count = self.db.cursor.fetchone()["count"]
+            return {"total_likes": count}
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail=f"Failed to fetch")
