@@ -24,7 +24,7 @@ class Users(Base):
     birthday = Column(Date, nullable=True)
     gender = Column(Enum(GenderEnum, name="genderenum"), nullable=True)
     verified = Column(Boolean, server_default="false")
-    profile_image = Column(String, nullable=False, server_default="default_profile.png")
+    profile_image_url = Column(String, nullable=False, server_default="default_profile.png")
     created_at = Column(TIMESTAMP, nullable=False, server_default=text("now()"))
 
 
@@ -90,3 +90,17 @@ class Follow(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     who = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     whom = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+
+
+class Story(Base):
+    __tablename__ = "stories"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    media_url = Column(String, nullable=False)
+    caption = Column(String, nullable=True)
+    created_at = Column(TIMESTAMP, nullable=False, server_default=text("now()"))
+    expires_at = Column(TIMESTAMP, nullable=False)
+    is_video = Column(Boolean, nullable=False, default=False)
+    is_public = Column(Boolean, nullable=False, default=True)
+

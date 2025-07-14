@@ -53,7 +53,7 @@ class UserAuth:
 
         try:
             self.db.cursor.execute("""INSERT INTO users 
-                                    (email, password, fullname, username, phone, birthday, gender, profile_image) 
+                                    (email, password, fullname, username, phone, birthday, gender, profile_image_url) 
                                     VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""",
                                    (email, hashed_password, fullname, username,
                                     phone, birthday, gender, profile_image))

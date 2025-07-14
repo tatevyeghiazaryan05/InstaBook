@@ -89,31 +89,36 @@ class UserCrud:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail="Only image files are allowed")
 
-        upload_dir = os.path.join("app", "user_pics")
+        upload_dir = os.path.join("user_pics")
         os.makedirs(upload_dir, exist_ok=True)
 
         try:
-            self.db.cursor.execute("SELECT profile_image FROM users WHERE id = %s", (user_id,))
+            self.db.cursor.execute("SELECT profile_image_url FROM users WHERE id = %s", (user_id,))
             result = self.db.cursor.fetchone()
             print("Result fetched from DB:", result)
 
             if not result:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                     detail="User not found")
-            previous_image_url = result["profile_image"]
+            previous_image_url = dict(result)["profile_image_url"]
+            print(previous_image_url)
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=f"Failed to fetch previous image: {e}")
 
         if previous_image_url and "default.jpg" not in previous_image_url:
             try:
-                old_filename = previous_image_url.split("/user_pics/")[-1]
+                old_filename = previous_image_url.split("/")[-1]
+                print(old_filename)
                 old_path = os.path.join(upload_dir, old_filename)
+                print(old_path)
+
                 if os.path.exists(old_path):
                     os.remove(old_path)
-            except Exception:
-                pass
 
+            except Exception:
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                    detail="Can't remove previous image")
         ext = file.filename.split(".")[-1]
         filename = f"user_{user_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.{ext}"
         file_path = os.path.join(upload_dir, filename)
@@ -125,11 +130,11 @@ class UserCrud:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail="Failed to save new image")
 
-        image_url = f"http://localhost:8000/user_pics/{filename}"
+        image_url = f"http://localhost:8000/api/get_image/{filename}"
 
         try:
             self.db.cursor.execute(
-                "UPDATE users SET profile_image = %s WHERE id = %s",
+                "UPDATE users SET profile_image_url = %s WHERE id = %s",
                 (image_url, user_id)
             )
             self.db.conn.commit()

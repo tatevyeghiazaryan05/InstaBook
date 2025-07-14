@@ -4,7 +4,7 @@ from datetime import datetime
 from fastapi import UploadFile, HTTPException, status
 
 from db_connection import DbConnection
-from schemas.posts_schema import CreatePostSchema,ChangeDescription, ChangeLocation, UpdatePostSchema
+from schemas.posts_schema import CreatePostSchema, UpdatePostSchema
 
 
 class PostCrud:
@@ -40,13 +40,12 @@ class PostCrud:
         if not post or post["user_id"] != user_id:
             raise HTTPException(status_code=403, detail="Not authorized to update this post")
 
+        description = data.description if data.description is not None else post["description"]
+        location = data.location if data.location is not None else post["location"]
         try:
-            if data.description is not None:
-                self.db.cursor.execute("UPDATE posts SET description = %s WHERE id = %s",
-                                       (data.description, data.post_id))
-
-            if data.location is not None:
-                self.db.cursor.execute("UPDATE posts SET location = %s WHERE id = %s", (data.location, data.post_id))
+            self.db.cursor.execute("""UPDATE posts SET 
+            description = %s, location = %s WHERE id = %s""",
+                                   (description, location, data.post_id))
 
             self.db.conn.commit()
         except Exception:

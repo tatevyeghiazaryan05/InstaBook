@@ -7,7 +7,7 @@ from fastapi.responses import FileResponse
 
 from typing import Optional
 
-from schemas.posts_schema import CreatePostSchema, ChangeDescription, ChangeLocation , PostOut, UpdatePostSchema
+from schemas.posts_schema import CreatePostSchema, PostOut, UpdatePostSchema
 from services.posts_crud import PostCrud
 from core.security import get_current_user
 

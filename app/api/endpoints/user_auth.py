@@ -46,7 +46,7 @@ async def signup(
         phone=phone,
         birthday=birthday,
         gender=gender,
-        profile_image=profile_image
+        profile_image_url=profile_image
     )
 
     return user_auth_service.signup(user_data)

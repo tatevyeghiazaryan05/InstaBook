@@ -3,10 +3,11 @@ import os
 import shutil
 
 from fastapi import APIRouter, Form, File, UploadFile, status, Depends, HTTPException
+from fastapi.responses import FileResponse
+
 from services.user_crud import UserCrud
 from schemas.user_crud_schema import ChangeUsername, ChangePassword, ChangePhone, ChangeFullname
 from core.security import get_current_user
-
 user_crud_router = APIRouter(tags=["Todo crud"])
 
 user_crud_service = UserCrud()
@@ -71,3 +72,8 @@ def change_profile_image(file: UploadFile = File(...),
             detail="Token error")
 
     return user_crud_service.change_profile_image(user_id, file)
+
+
+@user_crud_router.get("/api/get_image/{image_name}")
+def get_image(image_name: str):
+    return FileResponse(f"./user_pics/{image_name}")
