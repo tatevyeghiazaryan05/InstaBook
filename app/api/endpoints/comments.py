@@ -68,6 +68,6 @@ def unlike_comment(comment_id: int, token=Depends(get_current_user)):
     return comment_service.unlike_comment(comment_id, user_id)
 
 
-@comment_router.get("/api/get/comment/{comment_id}")
+@comment_router.get("/api/get/comment-likes/{comment_id}")
 def get_comment_likes(comment_id: int, token=Depends(get_current_user)):
     return comment_service.get_comment_likes(comment_id)

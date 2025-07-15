@@ -89,7 +89,8 @@ class UserCrud:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail="Only image files are allowed")
 
-        upload_dir = os.path.join("user_pics")
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        upload_dir = os.path.join(BASE_DIR, "user_pics")
         os.makedirs(upload_dir, exist_ok=True)
 
         try:

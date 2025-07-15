@@ -1,4 +1,4 @@
 # todo all posts changes in one api , write update one time +
-# todo delete posts_images which was expired ,from pycharm file
-# todo comment can like
+# todo when update image_profile delete the old  image from pycharm +
+# todo comment can like +
 # todo ask gpt which functions can be add for this project
