@@ -40,8 +40,8 @@ class PostCrud:
         if not post or post["user_id"] != user_id:
             raise HTTPException(status_code=403, detail="Not authorized to update this post")
 
-        description = data.description if data.description is not None else post["description"]
-        location = data.location if data.location is not None else post["location"]
+        description = data.description if data.description else post["description"]
+        location = data.location if data.location else post["location"]
         try:
             self.db.cursor.execute("""UPDATE posts SET 
             description = %s, location = %s WHERE id = %s""",

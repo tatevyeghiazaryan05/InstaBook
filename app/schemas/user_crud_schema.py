@@ -2,23 +2,12 @@ from pydantic import BaseModel, EmailStr
 from enum import Enum
 import datetime
 from fastapi import UploadFile
+from typing import Optional
 
 
-class ChangeUsername(BaseModel):
-    username: str
-
-
-class ChangeFullname(BaseModel):
-    fullname: str
-
-
-class ChangePassword(BaseModel):
-    password: str
-
-
-class ChangePhone(BaseModel):
-    phone: str
-
-
-class ChangeProfileImage(BaseModel):
-    pass
+class UpdateUserSchema(BaseModel):
+    phone: Optional[str] = None
+    password: Optional[str] = None
+    fullname: Optional[str] = None
+    username: Optional[str] = None
+    image_url: Optional[str] = None

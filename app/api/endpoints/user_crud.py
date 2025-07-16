@@ -6,72 +6,59 @@ from fastapi import APIRouter, Form, File, UploadFile, status, Depends, HTTPExce
 from fastapi.responses import FileResponse
 
 from services.user_crud import UserCrud
-from schemas.user_crud_schema import ChangeUsername, ChangePassword, ChangePhone, ChangeFullname
+from schemas.user_crud_schema import UpdateUserSchema
 from core.security import get_current_user
 user_crud_router = APIRouter(tags=["Todo crud"])
 
 user_crud_service = UserCrud()
 
 
-@user_crud_router.put("/api/user/change/username")
-def change_username(data: ChangeUsername, token=Depends(get_current_user)):
-    try:
-        user_id = token.get("id")
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Token error")
+@user_crud_router.put("/api/users")
+def user_updates(
+        phone=Form(None),
+        password=Form(None),
+        fullname=Form(None),
+        username=Form(None),
+        image: UploadFile = File(None),
+        token=Depends(get_current_user)):
+        try:
+            user_id = token.get("id")
+            print(user_id)
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Token error")
 
-    return user_crud_service.change_username(data, user_id)
+        if image:
 
+            BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            upload_dir = os.path.join(BASE_DIR, "user_pics")
+            os.makedirs(upload_dir, exist_ok=True)
 
-@user_crud_router.put("/api/user/change/password")
-def change_password(data: ChangePassword, token=Depends(get_current_user)):
-    try:
-        user_id = token.get("id")
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Token error")
+            ext = image.filename.split(".")[-1]
+            filename = f"user_{user_id}_{datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S')}.{ext}"
+            file_path = os.path.join(upload_dir, filename)
 
-    return user_crud_service.change_password(data, user_id)
+            try:
+                with open(file_path, "wb") as buffer:
+                    shutil.copyfileobj(image.file, buffer)
+            except Exception:
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                    detail="Failed to save new image")
 
+            image_url = f"http://localhost:8000/api/get_image/{filename}"
+            print(image_url)
+        else:
+            image_url = None
 
-@user_crud_router.put("/api/user/change/phone")
-def change_phone(data: ChangePhone, token=Depends(get_current_user)):
-    try:
-        user_id = token.get("id")
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Token error")
-
-    return user_crud_service.change_phone(data, user_id)
-
-
-@user_crud_router.put("/api/user/change/fullname")
-def change_fullname(data: ChangeFullname, token=Depends(get_current_user)):
-    try:
-        user_id = token.get("id")
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Token error")
-
-    return user_crud_service.change_fullname(data, user_id)
-
-
-@user_crud_router.put("/api/user/change/profile-image")
-def change_profile_image(file: UploadFile = File(...),
-                         token=Depends(get_current_user)):
-    try:
-        user_id = token.get("id")
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Token error")
-
-    return user_crud_service.change_profile_image(user_id, file)
+        data = UpdateUserSchema(
+            phone=phone,
+            password=password,
+            fullname=fullname,
+            username=username,
+            image_url=image_url
+        )
+        return user_crud_service.user_update(data, user_id)
 
 
 @user_crud_router.get("/api/get_image/{image_name}")
