@@ -11,7 +11,7 @@ Follows you
 
 You get a notification (store in a notifications table).
 
-#todo story_views
+#todo story_views + //get_viewers and get_viewers_count must see who made that story ?
 
 #todo highlights
 

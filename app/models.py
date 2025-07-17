@@ -116,3 +116,16 @@ class CommentLikes(Base):
     __table_args__ = (
         UniqueConstraint("comment_id", "user_id", name="unique_comment_like"),
     )
+
+
+class StoryViews:
+    __tablename__ = "story_views"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    story_id = Column(Integer, ForeignKey("stories.id", ondelete="CASCADE"), nullable=False)
+    viewer_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    viewed_at = Column(TIMESTAMP, server_default=text("now()"))
+
+    __table_args__ = (
+            UniqueConstraint("story_id", "viewer_id", name="unique_story_views"),
+        )

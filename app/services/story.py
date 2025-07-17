@@ -97,3 +97,50 @@ class StoryService:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=f"Error fetching  stories")
 
+    def view_story(self, story_id: int, user_id: int,):
+        try:
+            query = """
+                INSERT INTO story_views (story_id, viewer_id)
+                SELECT %s, %s
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM story_views WHERE story_id = %s AND viewer_id = %s
+                )
+            """
+            self.db.cursor.execute(query, (story_id, user_id, story_id, user_id))
+            self.db.conn.commit()
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail="Could not save story view")
+
+    def get_story_viewers(self, story_id: int):
+        try:
+            self.db.cursor.execute("""
+                SELECT users.id, users.username, users.profile_image_url
+                FROM story_views
+                JOIN users ON story_views.viewer_id = users.id
+                WHERE story_views.story_id = %s
+            """, (story_id,))
+            return self.db.cursor.fetchall()
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail="Error fetching viewers")
+
+    def get_story_view_count(self, story_id: int):
+        print(story_id)
+        try:
+            self.db.cursor.execute("SELECT COUNT(*) FROM story_views WHERE story_id = %s",
+                                   (story_id,))
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Database query error"
+            )
+
+        try:
+            count = self.db.cursor.fetchone()
+            return count
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to fetch"
+            )
