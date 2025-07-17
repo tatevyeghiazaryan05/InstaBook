@@ -1,4 +1,17 @@
-# todo all posts changes in one api , write update one time +
-# todo when update image_profile delete the old  image from pycharm +
-# todo comment can like +
-# todo ask gpt which functions can be add for this project
+# todo write function which will check if there is the comment with that id or not if there is not delete likes from LikeComments table +
+
+#todo Notifications System
+When someone:
+
+Likes your post
+
+Comments on your post
+
+Follows you
+
+You get a notification (store in a notifications table).
+
+#todo story_views
+
+#todo highlights
+

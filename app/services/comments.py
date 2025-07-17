@@ -21,6 +21,32 @@ class Comment:
                 detail="Database Query error"
             )
 
+    def clean_up_comment_if_deleted(self, comment_id):
+        try:
+            self.db.cursor.execute("""SELECT * FROM comments WHERE id=%s""",
+                                   (comment_id,))
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail="Query error")
+
+        try:
+            comment = self.db.cursor.fetchone()
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail="Fetch error")
+
+        if not comment:
+            try:
+                self.db.cursor.execute("""DELETE FROM comment_likes WHERE comment_id=%s""",
+                                   (comment_id,))
+                self.db.conn.commit()
+            except Exception:
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                    detail="Failed to clean orphaned likes")
+            return False
+
+        return True
+
     def get_comments_for_post(self, post_id: int):
         try:
             self.db.cursor.execute("""SELECT * FROM comments WHERE post_id = %s""",
@@ -112,6 +138,10 @@ class Comment:
                                 detail="Failed to update comment")
 
     def like_comment(self, comment_id, user_id: int):
+        if not self.clean_up_comment_if_deleted(comment_id):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="Comment not found")
+
         try:
             self.db.cursor.execute("SELECT id FROM comments WHERE id = %s", (comment_id,))
         except Exception:
@@ -137,6 +167,10 @@ class Comment:
                                 detail="You already liked this comment")
 
     def unlike_comment(self, comment_id, user_id: int):
+        if not self.clean_up_comment_if_deleted(comment_id):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="Comment not found")
+
         try:
             self.db.cursor.execute("""DELETE FROM comment_likes WHERE 
                                    comment_id = %s AND user_id = %s""",
@@ -148,6 +182,10 @@ class Comment:
                                 detail=f"Failed to unlike comment")
 
     def get_comment_likes(self, comment_id: int):
+        if not self.clean_up_comment_if_deleted(comment_id):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail="Comment not found")
+
         try:
             self.db.cursor.execute(
                 "SELECT COUNT(*) FROM comment_likes WHERE comment_id = %s",
