@@ -1,6 +1,10 @@
-# todo write function which will check if there is the comment with that id or not if there is not delete likes from LikeComments table +
+# todo clean_up_comment_if_deleted call while   run a project +
+# todo story_views get_viewers and get_viewers_count must see who made that story +
+# todo create notification_service where will be like_notification,comment_notification ...
+# todo  if notification is read and the date have been 1 month delete it from table
 
 #todo Notifications System
+
 When someone:
 
 Likes your post
@@ -11,7 +15,5 @@ Follows you
 
 You get a notification (store in a notifications table).
 
-#todo story_views + //get_viewers and get_viewers_count must see who made that story ?
 
 #todo highlights
-

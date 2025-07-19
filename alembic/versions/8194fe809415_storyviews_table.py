@@ -1,8 +1,8 @@
-"""StoryViews table
+"""storyviews table
 
-Revision ID: 1e9e9fc5025b
+Revision ID: 8194fe809415
 Revises: a15018b2c66f
-Create Date: 2025-07-17 23:59:04.906728
+Create Date: 2025-07-18 11:22:14.600805
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '1e9e9fc5025b'
+revision: str = '8194fe809415'
 down_revision: Union[str, Sequence[str], None] = 'a15018b2c66f'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -24,11 +24,14 @@ def upgrade() -> None:
     op.create_table(
         'story_views',
         sa.Column('id', sa.Integer(), primary_key=True, nullable=False),
-        sa.Column('story_id', sa.Integer(), sa.ForeignKey('stories.id', ondelete='CASCADE'), nullable=False),
-        sa.Column('viewer_id', sa.Integer(), sa.ForeignKey('users.id', ondelete='CASCADE'), nullable=False),
-        sa.Column('viewed_at', sa.TIMESTAMP(), server_default=sa.text('now()'), nullable=True),
-        sa.UniqueConstraint('story_id', 'viewer_id', name='unique_story_views')
+        sa.Column('story_id', sa.Integer(), nullable=False),
+        sa.Column('viewer_id', sa.Integer(), nullable=False),
+        sa.Column('viewed_at', sa.TIMESTAMP(), server_default=sa.text("now()"), nullable=False),
+
+        sa.ForeignKeyConstraint(['story_id'], ['stories.id'], ondelete='CASCADE'),
+        sa.ForeignKeyConstraint(['viewer_id'], ['users.id'], ondelete='CASCADE'),
     )
+
     # ### end Alembic commands ###
 
 

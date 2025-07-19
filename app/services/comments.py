@@ -3,6 +3,8 @@ from fastapi import HTTPException, status
 from db_connection import DbConnection
 from schemas.posts_schema import CommentSchema, UpdateCommentSchema
 
+import asyncio
+
 
 class Comment:
     def __init__(self):
@@ -38,7 +40,7 @@ class Comment:
         if not comment:
             try:
                 self.db.cursor.execute("""DELETE FROM comment_likes WHERE comment_id=%s""",
-                                   (comment_id,))
+                                       (comment_id,))
                 self.db.conn.commit()
             except Exception:
                 raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -201,3 +203,26 @@ class Comment:
         except Exception:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail=f"Failed to fetch")
+
+    async def auto_clean_orphaned_comment_likes(self):
+        while True:
+            try:
+                # Get all unique comment_ids from comment_likes
+                self.db.cursor.execute("SELECT DISTINCT comment_id FROM comment_likes")
+                comment_ids = self.db.cursor.fetchall()
+
+                for row in comment_ids:
+                    comment_id = row[0]
+                    self.db.cursor.execute("SELECT 1 FROM comments WHERE id = %s", (comment_id,))
+                    exists = self.db.cursor.fetchone()
+
+                    if not exists:
+                        self.db.cursor.execute("DELETE FROM comment_likes WHERE comment_id = %s", (comment_id,))
+                        self.db.conn.commit()
+
+                print("✅ Orphaned comment_likes cleanup done.")
+
+            except Exception as e:
+                print("❌ Error during orphaned comment_likes cleanup:", e)
+
+            await asyncio.sleep(3600)  # Wait 1 hour before next run

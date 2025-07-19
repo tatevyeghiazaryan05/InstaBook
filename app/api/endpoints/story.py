@@ -55,9 +55,19 @@ def view_story(story_id: int, token=Depends(get_current_user)):
 
 @story_router.get("/api/story/{story_id}/viewers")
 def get_viewers(story_id: int, token=Depends(get_current_user)):
-    return story_service.get_story_viewers(story_id)
+    try:
+        user_id = token.get("id")
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail="Token error")
+    return story_service.get_story_viewers(story_id, user_id)
 
 
 @story_router.get("/stories/{story_id}/views")
 def get_story_views(story_id: int, token=Depends(get_current_user)):
-    return story_service.get_story_view_count(story_id)
+    try:
+        user_id = token.get("id")
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail="Token error")
+    return story_service.get_story_view_count(story_id, user_id)

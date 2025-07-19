@@ -1,9 +1,9 @@
-# services/story_service.py
-
 import os
 import shutil
 from datetime import datetime, timedelta
+
 from fastapi import UploadFile, HTTPException, status
+
 from db_connection import DbConnection
 from schemas.story_schema import StorySchema
 
@@ -112,7 +112,22 @@ class StoryService:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail="Could not save story view")
 
-    def get_story_viewers(self, story_id: int):
+    def get_story_viewers(self, story_id: int, user_id: int):
+        try:
+            self.db.cursor.execute("SELECT user_id FROM stories WHERE id = %s", (story_id,))
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail="Query error")
+        try:
+            owner = self.db.cursor.fetchone()
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail="Fetch error")
+
+        if not owner or owner[0] != user_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="You are not the owner of this story")
+
         try:
             self.db.cursor.execute("""
                 SELECT users.id, users.username, users.profile_image_url
@@ -125,8 +140,23 @@ class StoryService:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail="Error fetching viewers")
 
-    def get_story_view_count(self, story_id: int):
-        print(story_id)
+    def get_story_view_count(self, story_id: int, user_id: int):
+        try:
+            self.db.cursor.execute("SELECT user_id FROM stories WHERE id = %s", (story_id,))
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail="Query error")
+
+        try:
+            owner = self.db.cursor.fetchone()
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail="Fetch error")
+
+        if not owner or owner[0] != user_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="You are not the owner of this story")
+
         try:
             self.db.cursor.execute("SELECT COUNT(*) FROM story_views WHERE story_id = %s",
                                    (story_id,))

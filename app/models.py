@@ -129,3 +129,12 @@ class StoryViews:
     __table_args__ = (
             UniqueConstraint("story_id", "viewer_id", name="unique_story_views"),
         )
+
+
+class Notifications:
+    __tablename__ = "notifications"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    message = Column(String, nullable=False)
+    is_read = Column(Boolean, server_default='false', nullable=False)
+    created_at = Column(TIMESTAMP, server_default=text("now()"))
