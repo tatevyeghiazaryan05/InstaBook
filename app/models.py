@@ -135,6 +135,10 @@ class Notifications:
     __tablename__ = "notifications"
 
     id = Column(Integer, primary_key=True, nullable=False)
-    message = Column(String, nullable=False)
-    is_read = Column(Boolean, server_default='false', nullable=False)
+    who = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    whom = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    comment_id = Column(Integer, ForeignKey("comments.id", ondelete="CASCADE"), nullable=True)
+    post_id = Column(Integer, ForeignKey("posts.id", ondelete="CASCADE"), nullable=True)
+    is_read = Column(Boolean, nullable=False, server_default='false')
+    category = Column(String, nullable=False)
     created_at = Column(TIMESTAMP, server_default=text("now()"))

@@ -6,6 +6,7 @@ from core.security import get_current_user
 
 like_router = APIRouter()
 like_post_service = Like()
+notification_service = NotificationService()
 
 
 @like_router.post("/api/posts/like/{post_id}")
@@ -15,6 +16,7 @@ def like_post(post_id: int, token=Depends(get_current_user)):
     except Exception:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail="Token error")
+    notification_service = NotificationService.like_post(user_id, post_id)
     return like_post_service.like_post(user_id, post_id)
 
 

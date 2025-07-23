@@ -1,19 +1,19 @@
-# todo clean_up_comment_if_deleted call while   run a project +
-# todo story_views get_viewers and get_viewers_count must see who made that story +
 # todo create notification_service where will be like_notification,comment_notification ...
 # todo  if notification is read and the date have been 1 month delete it from table
 
+# todo @app.on_event("startup") if startup is endpoint write /
+#todo write new api which will give one notification which is not read
 #todo Notifications System
 
 When someone:
 
 Likes your post
-
 Comments on your post
+
+likes your comment
 
 Follows you
 
 You get a notification (store in a notifications table).
-
 
 #todo highlights
