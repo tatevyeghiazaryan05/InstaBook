@@ -19,3 +19,8 @@ def mark_notification_as_read(notification_id: int, token=Depends(get_current_us
 @notification_service.delete("/api/admin/notifications/delete/by/id/{notification_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_notification(notification_id: int, token=Depends(get_current_user)):
     notification_service.delete_notification(notification_id)
+
+
+@notification_service.get("/api/notification/{notification_id}")
+def get_user_notification(notification_id: int, token=Depends(get_current_user)):
+    return notification_service.get_unread_notifications(notification_id)

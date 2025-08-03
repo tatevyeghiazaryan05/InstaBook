@@ -8,6 +8,10 @@ class Like:
     def __init__(self):
         self.db = DbConnection()
 
+    def get_post_by_id(self, post_id: int):
+        self.db.cursor.execute("SELECT * FROM posts WHERE id = %s", (post_id,))
+        return self.db.cursor.fetchone()
+
     def like_post(self, user_id: int, post_id: int):
         try:
             self.db.cursor.execute("""SELECT id FROM post_likes

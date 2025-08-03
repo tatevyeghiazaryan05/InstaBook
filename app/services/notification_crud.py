@@ -6,16 +6,22 @@ from fastapi import HTTPException, status
 
 from db_connection import DbConnection
 
+from schemas.notification_schema import CreateNotificationSchema
+
 
 class NotificationCRUD:
     def __init__(self):
         self.db = DbConnection()
 
-    def create_notification(self, message: str):
+    def create_notification(self, who: int, notification_data: CreateNotificationSchema):
         try:
             self.db.cursor.execute(
-                "INSERT INTO notifications (message) VALUES (%s)",
-                 (message))
+                "INSERT INTO notifications (who,whom,category, post_id, comment_id) VALUES (%s,%s,%s,%s,%s)",
+                (who,
+                 notification_data.whom,
+                 notification_data.category.value,
+                 notification_data.post_id,
+                 notification_data.comment_id))
             self.db.conn.commit()
         except Exception:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -47,3 +53,13 @@ class NotificationCRUD:
         except Exception:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 detail="Error deleting notification")
+
+    def get_an_unread_notification(self, notification_id: int):
+        try:
+            self.db.cursor.execute(
+                "SELECT id, message, created_at FROM notifications WHERE is_read = %s AND id=%s",
+                (False, notification_id))
+            return self.db.cursor.fetchone()
+        except Exception:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail="Error fetching notification")
